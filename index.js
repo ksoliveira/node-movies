@@ -1,9 +1,9 @@
 import app from './src/app.js';
-import { loadWinners } from './src/csv/parseWinnersAwards.js';
+import { insertMoviesFromCSV } from './src/csv/moviesFromCSV.js';
 
 const PORT = process.env.PORT || 3000;
 
-loadWinners()
+insertMoviesFromCSV()
   .catch((err) => {
     console.error('Error:', err);
   })
