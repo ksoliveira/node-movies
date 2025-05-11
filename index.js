@@ -1,8 +1,7 @@
-import { loadWinners } from './src/csv/parseWinnersAwards.js';
-import { calculateIntervals } from './src/services/calculateIntervals.js';
+import app from './src/app.js';
 
-const winnersByProducer = await loadWinners();
+const PORT = process.env.PORT || 3000;
 
-const intervals = calculateIntervals(winnersByProducer);
-
-console.log(JSON.stringify(intervals, null, 2));
+app.listen(PORT, () => {
+  console.log(`Runing in http://localhost:${PORT}/producers/intervals`);
+});
