@@ -8,6 +8,11 @@ router.get('/', async (req, res) => {
   try {
     const winnersByProducer = await loadWinners();
     const intervals = calculateIntervals(winnersByProducer);
+
+    if (intervals.min?.length === 0 && intervals.max?.length === 0) {
+      return res.status(204).send();
+    }
+
     res.json(intervals);
   } catch (err) {
     res.status(500).json({ error: 'Internal server error.' });
