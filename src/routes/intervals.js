@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { loadWinners } from '../csv/parseWinnersAwards.js';
+import { loadWinners } from '../services/parseWinnersAwards.js';
 import { calculateIntervals } from '../services/calculateIntervals.js';
 
 const router = Router();
