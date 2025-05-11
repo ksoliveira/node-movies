@@ -4,12 +4,11 @@ import { loadWinners } from './src/csv/parseWinnersAwards.js';
 const PORT = process.env.PORT || 3000;
 
 loadWinners()
-  .then(() => {
+  .catch((err) => {
+    console.error('Error:', err);
+  })
+  .finally(() => {
     app.listen(PORT, () => {
       console.log(`Runing in http://localhost:${PORT}/producers/intervals`);
     });
-  })
-  .catch((err) => {
-    // TODO:: Retornar erro tratado em json
-    console.error('Error:', err);
   });
