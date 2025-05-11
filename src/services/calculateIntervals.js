@@ -1,5 +1,9 @@
 export function calculateIntervals(winnersByProducer) {
     const intervals = [];
+
+    for (const producer in winnersByProducer) {
+      winnersByProducer[producer].sort((a, b) => a - b);
+    }
   
     for (const [producer, years] of Object.entries(winnersByProducer)) {
       if (years.length < 2) continue;
