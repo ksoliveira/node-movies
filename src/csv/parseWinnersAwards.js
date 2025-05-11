@@ -19,6 +19,10 @@ export async function loadWinners() {
   return new Promise((resolve, reject) => {
     const winnersByProducer = {};
 
+    if (!fs.existsSync(csvPath)) {
+      return reject({ message: 'CSV file not found' });
+    }
+
     fs.createReadStream(csvPath)
       .pipe(csv({ separator: ';' }))
       .on('data', (row) => {
@@ -37,6 +41,8 @@ export async function loadWinners() {
       .on('end', () => {
         resolve(winnersByProducer);
       })
-      .on('error', reject);
+      .on('error', (e) => {
+        reject(e)
+    });
   });
 }

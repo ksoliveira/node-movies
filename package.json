@@ -1,5 +1,5 @@
 {
-    "name": "golden-awads",
+    "name": "golden-awards",
     "version": "1.0.0",
     "type": "module",
     "description": "API para análise de produtores vencedores do Golden Raspberry Awards",
@@ -14,9 +14,7 @@
         "node": ">=20.0.0"
     },
     "dependencies": {
-        "csv-parser": "^3.0.0"
-    },
-    "devDependencies": {
-
+        "csv-parser": "^3.0.0",
+        "express": "^5.1.0"
     }
 }
