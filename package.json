@@ -1,0 +1,23 @@
+{
+    "name": "node-movies",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "API para análise de produtores vencedores do Golden Raspberry Awards",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "jest"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "dependencies": {
+        "csv-parser": "^3.0.0"
+    },
+    "devDependencies": {
+
+    }
+}
