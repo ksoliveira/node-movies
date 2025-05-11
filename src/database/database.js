@@ -1,9 +1,7 @@
 import Database from 'better-sqlite3';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
-const db = new Database(':memory:', { verbose: isDevelopment ? console.log : null });
+const db = new Database(':memory:');
 
-console.log('Database created in memory');
 db.exec(`
   CREATE TABLE IF NOT EXISTS movies (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
