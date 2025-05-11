@@ -22,7 +22,6 @@ export async function loadWinners() {
     fs.createReadStream(csvPath)
       .pipe(csv({ separator: ';' }))
       .on('data', (row) => {
-        // console.log('Row:', row.winner);
         if (row.winner && row.winner.toLowerCase() === 'yes') {
           const year = parseInt(row.year);
           const producers = splitProducers(row.producers || '');
@@ -31,13 +30,11 @@ export async function loadWinners() {
             if (!winnersByProducer[producer]) {
               winnersByProducer[producer] = [];
             }
-            console.log('>>');
             winnersByProducer[producer].push(year);
           });
         }
       })
       .on('end', () => {
-        console.log('RESOLVE - Winners by producer:', winnersByProducer);
         resolve(winnersByProducer);
       })
       .on('error', reject);
