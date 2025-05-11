@@ -32,6 +32,11 @@ export async function loadWinners() {
     fs.createReadStream(csvPath)
       .pipe(csv({ separator: ';' }))
       .on('data', (row) => {
+      try {
+        if (!row.year || !row.title || !row.studios || !row.producers) {
+          console.warn(`Ignored invalid row: ${JSON.stringify(row)}`);
+          return;
+        }
 
         insertMovie.run(
           parseInt(row.year),
@@ -52,7 +57,9 @@ export async function loadWinners() {
             winnersByProducer[producer].push(year);
           });
         }
-      })
+      } catch (err) {
+        console.error(`Eror row: ${JSON.stringify(row)} - ${err.message}`);
+      }})
       .on('end', () => {
         resolve(winnersByProducer);
       })
