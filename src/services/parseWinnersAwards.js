@@ -1,13 +1,4 @@
-import fs from 'fs';
-import path from 'path';
-import csv from 'csv-parser';
-import { fileURLToPath } from 'url';
 import db from '../database/database.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const csvPath = path.join(__dirname, 'data', 'movielist.csv');
 
 function listMovies() {
   return new Promise((resolve, reject) => {
