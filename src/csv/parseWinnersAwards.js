@@ -9,6 +9,17 @@ const __dirname = path.dirname(__filename);
 
 const csvPath = path.join(__dirname, 'data', 'movielist.csv');
 
+function listMovies() {
+  return new Promise((resolve, reject) => {
+    try {
+      const rows = db.prepare('SELECT * FROM movies').all();
+      resolve(rows);
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
+
 function splitProducers(producersCellString) {
   return producersCellString
     .split(/,| and /)
@@ -20,51 +31,33 @@ export async function loadWinners() {
   return new Promise((resolve, reject) => {
     const winnersByProducer = {};
 
-    if (!fs.existsSync(csvPath)) {
-      return reject({ message: 'CSV file not found' });
-    }
-
-    const insertMovie = db.prepare(`
-      INSERT INTO movies (year, title, studios, producers, winner)
-      VALUES (?, ?, ?, ?, ?)
-    `);
-
-    fs.createReadStream(csvPath)
-      .pipe(csv({ separator: ';' }))
-      .on('data', (row) => {
-      try {
-        if (!row.year || !row.title || !row.studios || !row.producers) {
-          console.warn(`Ignored invalid row: ${JSON.stringify(row)}`);
-          return;
-        }
-
-        insertMovie.run(
-          parseInt(row.year),
-          row.title,
-          row.studios,
-          row.producers,
-          row.winner || 'no'
-        );
-
-        if (row.winner && row.winner.toLowerCase() === 'yes') {
-          const year = parseInt(row.year);
-          const producers = splitProducers(row.producers || '');
-
-          producers.forEach((producer) => {
-            if (!winnersByProducer[producer]) {
-              winnersByProducer[producer] = [];
+    listMovies()
+      .then((rows) => {
+        rows.forEach((row) => {
+          try {
+            if (!row.year || !row.title || !row.studios || !row.producers) {
+              console.warn(`Ignored invalid row: ${JSON.stringify(row)}`);
+              return;
             }
-            winnersByProducer[producer].push(year);
-          });
-        }
-      } catch (err) {
-        console.error(`Eror row: ${JSON.stringify(row)} - ${err.message}`);
-      }})
-      .on('end', () => {
+    
+            if (row.winner && row.winner.toLowerCase() === 'yes') {
+              const year = parseInt(row.year);
+              const producers = splitProducers(row.producers || '');
+    
+              producers.forEach((producer) => {
+                if (!winnersByProducer[producer]) {
+                  winnersByProducer[producer] = [];
+                }
+                winnersByProducer[producer].push(year);
+              });
+            }
+          } catch (err) {
+            console.error(`Eror row: ${JSON.stringify(row)} - ${err.message}`);
+          }})
+        });
         resolve(winnersByProducer);
       })
-      .on('error', (e) => {
-        reject(e);
+      .catch((err) => {
+        reject(err);
       });
-  });
 }
