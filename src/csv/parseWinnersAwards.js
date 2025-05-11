@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import csv from 'csv-parser';
 import { fileURLToPath } from 'url';
+import db from '../database/database.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -23,9 +24,23 @@ export async function loadWinners() {
       return reject({ message: 'CSV file not found' });
     }
 
+    const insertMovie = db.prepare(`
+      INSERT INTO movies (year, title, studios, producers, winner)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+
     fs.createReadStream(csvPath)
       .pipe(csv({ separator: ';' }))
       .on('data', (row) => {
+
+        insertMovie.run(
+          parseInt(row.year),
+          row.title,
+          row.studios,
+          row.producers,
+          row.winner || 'no'
+        );
+
         if (row.winner && row.winner.toLowerCase() === 'yes') {
           const year = parseInt(row.year);
           const producers = splitProducers(row.producers || '');
@@ -42,7 +57,7 @@ export async function loadWinners() {
         resolve(winnersByProducer);
       })
       .on('error', (e) => {
-        reject(e)
-    });
+        reject(e);
+      });
   });
 }
