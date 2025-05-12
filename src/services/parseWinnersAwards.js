@@ -49,7 +49,6 @@ export async function loadWinners() {
         resolve(winnersByProducer);
       })
       .catch((err) => {
-        console.error(err.message);
         reject(new Error(err.message));
       });
   });
