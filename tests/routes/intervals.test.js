@@ -1,6 +1,7 @@
 import request from 'supertest';
 import app from '../../src/app.js';
 import db from '../../src/database/database.js';
+import { jest } from '@jest/globals';
 
 describe('GET /producers/intervals', () => {
   beforeEach(() => {
@@ -38,5 +39,17 @@ describe('GET /producers/intervals', () => {
     const response = await request(app).post('/producers/intervals');
     expect(response.status).toBe(405);
     expect(response.body).toEqual({ error: 'Method Not Allowed' });
+  });
+
+  it('deve retornar 500 se ocorrer um erro interno', async () => {
+    jest.spyOn(db, 'prepare').mockImplementation(() => {
+      throw new Error('Error');
+    });
+  
+    const response = await request(app).get('/producers/intervals');
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal server error.' });
+  
+    db.prepare.mockRestore();
   });
 });
