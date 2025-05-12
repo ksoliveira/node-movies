@@ -98,6 +98,18 @@ describe('GET /producers/intervals', () => {
     expect(response.status).toBe(204);
   });
 
+  it('deve retornar 204 se a lista de filmes não tiver nenhum ganhador do prêmio', async () => {
+    db.exec(`
+      INSERT INTO movies (year, title, studios, producers, winner)
+      VALUES
+        (1980, 'Movie 1', 'Studio 1', 'Producer 1', 'no'),
+        (1981, 'Movie 2', 'Studio 2', 'Producer 2', 'no');
+    `);
+  
+    const response = await request(app).get('/producers/intervals');
+    expect(response.status).toBe(204);
+  });
+
   it('deve retornar 404 para uma rota inexistente', async () => {
     const response = await request(app).get('/rota-inexistente');
     expect(response.status).toBe(404);
