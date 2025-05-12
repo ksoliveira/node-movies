@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { loadWinners } from '../services/parseWinnersAwards.js';
-import { calculateIntervals } from '../services/calculateIntervals.js';
+import { loadWinners } from '../utils/parseWinnersAwards.js';
+import { calculateIntervals } from '../utils/calculateIntervals.js';
 
 const router = Router();
 
