@@ -77,8 +77,26 @@ describe('GET /producers/intervals', () => {
     expect(response.body).toEqual({ error: 'Not found' });
   });
 
-  it('deve retornar 405 para um método não permitido', async () => {
+  it('deve retornar 405 para o método POST', async () => {
     const response = await request(app).post('/producers/intervals');
+    expect(response.status).toBe(405);
+    expect(response.body).toEqual({ error: 'Method Not Allowed' });
+  });
+
+  it('deve retornar 405 para o método DELETE', async () => {
+    const response = await request(app).delete('/producers/intervals');
+    expect(response.status).toBe(405);
+    expect(response.body).toEqual({ error: 'Method Not Allowed' });
+  });
+
+  it('deve retornar 405 para o método PUT', async () => {
+    const response = await request(app).put('/producers/intervals');
+    expect(response.status).toBe(405);
+    expect(response.body).toEqual({ error: 'Method Not Allowed' });
+  });
+
+  it('deve retornar 405 para o método PATCH', async () => {
+    const response = await request(app).patch('/producers/intervals');
     expect(response.status).toBe(405);
     expect(response.body).toEqual({ error: 'Method Not Allowed' });
   });
