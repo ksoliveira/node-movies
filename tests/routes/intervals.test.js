@@ -47,6 +47,25 @@ describe('GET /producers/intervals', () => {
     expect(response.body.max.length).toEqual(2);
   });
 
+  it('deve retornar 200 e mostrar "Producer 1" como min e max 2 vezes', async () => {
+    // São dois intervalos de 10 anos.
+    // Como são intervalos iguais, entendo que ele é o mínimo e o máximo
+    // Também entendo que deva aparecer duas vezes nos arrays "min" e "max" porque apesar do interval ser igual, muda o previousWin e o followingWin. 
+        // Portanto, pode ser um dado importante a ser consultado pelos usuários da API
+    db.exec(`
+      INSERT INTO movies (year, title, studios, producers, winner)
+      VALUES
+        (1980, 'Movie 1', 'Studio 1', 'Producer 1', 'yes'),
+        (1990, 'Movie 2', 'Studio 2', 'Producer 1', 'yes'),
+        (2000, 'Movie 3', 'Studio 3', 'Producer 1', 'yes');
+    `);
+  
+    const response = await request(app).get('/producers/intervals');
+    expect(response.status).toBe(200);
+    expect(response.body.min.length).toEqual(2);
+    expect(response.body.max.length).toEqual(2);
+  });
+
   it('deve retornar 204 se não houver intervalos', async () => {
     const response = await request(app).get('/producers/intervals');
     expect(response.status).toBe(204);
@@ -74,5 +93,13 @@ describe('GET /producers/intervals', () => {
     expect(response.body).toEqual({ error: 'Internal server error.' });
   
     db.prepare.mockRestore();
+  });
+
+  it('deve retornar 500 se a tabela não existir', async () => {
+    db.exec('DROP TABLE IF EXISTS movies');
+  
+    const response = await request(app).get('/producers/intervals');
+    expect(response.status).toBe(500);
+    expect(response.body).toEqual({ error: 'Internal server error.' });
   });
 });
