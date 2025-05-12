@@ -27,4 +27,16 @@ describe('GET /producers/intervals', () => {
     expect(response.body).toHaveProperty('min');
     expect(response.body).toHaveProperty('max');
   });
+
+  it('deve retornar 404 para uma rota inexistente', async () => {
+    const response = await request(app).get('/rota-inexistente');
+    expect(response.status).toBe(404);
+    expect(response.body).toEqual({ error: 'Not found' });
+  });
+
+  it('deve retornar 405 para um método não permitido', async () => {
+    const response = await request(app).post('/producers/intervals');
+    expect(response.status).toBe(405);
+    expect(response.body).toEqual({ error: 'Method Not Allowed' });
+  });
 });
