@@ -24,6 +24,33 @@ describe('GET /producers/intervals', () => {
     expect(response.body).toHaveProperty('max');
   });
 
+  it('deve retornar 200 eencontrar min e max mesmo com separação de nomes por vírgula ou and', async () => {
+    db.exec(`
+      INSERT INTO movies (year, title, studios, producers, winner)
+      VALUES
+        (1980, 'Movie 1', 'Studio 1', 'John, Producer 1', 'yes'),
+        (1981, 'Movie 2', 'Studio 2', 'Mike and Producer 1', 'yes'),
+        (1980, 'Movie 3', 'Studio 3', 'Evander Mint, Lincoln, Malcon and Producer 2', 'yes'),
+        (1920, 'Movie 4', 'Studio 4', 'Producer 2', 'yes');
+    `);
+
+    const response = await request(app).get('/producers/intervals');
+    expect(response.status).toBe(200);
+    expect(response.body).toHaveProperty('min');
+    expect(response.body.min.length).toEqual(1);
+    expect(response.body.min[0].previousWin).toEqual(1980);
+    expect(response.body.min[0].followingWin).toEqual(1981);
+    expect(response.body.min[0].interval).toEqual(1);
+    expect(response.body.min[0].producer).toEqual('Producer 1');
+    
+    expect(response.body).toHaveProperty('max');
+    expect(response.body.max.length).toEqual(1);
+    expect(response.body.max[0].previousWin).toEqual(1920);
+    expect(response.body.max[0].followingWin).toEqual(1980);
+    expect(response.body.max[0].interval).toEqual(60);
+    expect(response.body.max[0].producer).toEqual('Producer 2');
+  });
+
   it('deve retornar 200 e ter dois produtores empatados no MIN e no MAX', async () => {
     db.exec(`
       INSERT INTO movies (year, title, studios, producers, winner)
