@@ -6,7 +6,7 @@ function listMovies() {
       const rows = db.prepare('SELECT * FROM movies').all();
       resolve(rows);
     } catch (err) {
-      reject(err);
+      reject(new Error('Database error - ' + err.message));
     }
   });
 }
@@ -30,11 +30,11 @@ export async function loadWinners() {
               console.warn(`Ignored invalid row: ${JSON.stringify(row)}`);
               return;
             }
-    
+
             if (row.winner && row.winner.toLowerCase() === 'yes') {
               const year = parseInt(row.year);
               const producers = splitProducers(row.producers || '');
-    
+
               producers.forEach((producer) => {
                 if (!winnersByProducer[producer]) {
                   winnersByProducer[producer] = [];
@@ -43,12 +43,14 @@ export async function loadWinners() {
               });
             }
           } catch (err) {
-            console.error(`Eror row: ${JSON.stringify(row)} - ${err.message}`);
-          }})
+            console.error(`Error row: ${JSON.stringify(row)} - ${err.message}`);
+          }
         });
         resolve(winnersByProducer);
       })
       .catch((err) => {
-        reject(err);
+        console.error(err.message);
+        reject(new Error(err.message));
       });
+  });
 }
