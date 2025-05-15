@@ -1,10 +1,20 @@
 import request from 'supertest';
 import app from '../../src/app.js';
 import db from '../../src/database/database.js';
+import { insertMoviesFromCSV } from '../../src/csv/moviesFromCSV.js';
 import { jest } from '@jest/globals';
 
 describe('GET /producers/intervals', () => {
   beforeEach(() => {
+    db.exec(`
+      CREATE TABLE IF NOT EXISTS movies (
+        year INTEGER NOT NULL,
+        title TEXT NOT NULL,
+        studios TEXT NOT NULL,
+        producers TEXT NOT NULL,
+        winner TEXT
+      );
+    `);
     db.exec('DELETE FROM movies');
   });
 
@@ -158,5 +168,42 @@ describe('GET /producers/intervals', () => {
     const response = await request(app).get('/producers/intervals');
     expect(response.status).toBe(500);
     expect(response.body).toEqual({ error: 'Internal server error.' });
+  });
+
+  it('deve retornar 200 e o objeto intervals deve ser o correspondente ao movielist.csv atual', async () => {
+    await insertMoviesFromCSV();
+    const response = await request(app).get('/producers/intervals');
+    const intervals = {
+        "min": [
+            {
+                "producer": "Allan Carr",
+                "interval": 1,
+                "previousWin": 1980,
+                "followingWin": 1981
+            },
+            {
+                "producer": "Joel Silver",
+                "interval": 1,
+                "previousWin": 1990,
+                "followingWin": 1991
+            }
+        ],
+        "max": [
+            {
+                "producer": "Matthew Vaughn",
+                "interval": 13,
+                "previousWin": 2002,
+                "followingWin": 2015
+            },
+            {
+                "producer": "Kalahan Santhiago",
+                "interval": 13,
+                "previousWin": 2003,
+                "followingWin": 2016
+            }
+        ]
+    };
+    expect(response.status).toBe(200);
+    expect(response.body).toEqual(intervals);
   });
 });
